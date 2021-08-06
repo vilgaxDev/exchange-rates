@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <!-- <link rel="stylesheet" href="styles.css"> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/css/materialize.min.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <title>Estatus replicacion tasas de cambio</title>
+</head>
+
+<body>
+  <div id="root">
+    <!-- ::APP:: -->
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-beta/js/materialize.min.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
+  <script type="text/javascript">
+    function getDatesNodeXpath(strDate) {
+      var searchPattern = "//li[@class='collection-item avatar']";
+      var headings = document.evaluate(searchPattern, document, null, XPathResult.ANY_TYPE, null);
+      var flag = true;
+
+      while (flag) {
+        var pObj = headings.iterateNext();
+        if (!pObj) {
+          flag = false;
+          break;
+        }
+        if (pObj.style.display == "none")
+          pObj.style.display = "";
+      }
+
+      if (strDate == "Todas")
+        return;
+
+      searchPattern = "//li[@class='collection-item avatar']/p[not(contains(.,'" + strDate + "'))]";
+      headings = document.evaluate(searchPattern, document, null, XPathResult.ANY_TYPE, null);
+
+      flag = true;
+      while (flag) {
+        var pObj = headings.iterateNext();
+        if (!pObj) {
+          flag = false;
+          break;
+        }
+        pObj.parentElement.style.display = "none";
+      }
+    }
+
+    function onNavClick(sender) {
+      debugger;
+      console.log("sender", sender);
+
+      var activeNav = document.querySelector("ul li[class='active']");
+      if (activeNav)
+        activeNav.className = "";
+
+      sender.target.parentElement.className = "active";
+
+      if (sender.target.text)
+        getDatesNodeXpath(sender.target.text);
+
+      return false;
+    }
+
+    document.addEventListener('readystatechange', function () {
+      var nav = document.querySelectorAll('.sidenav');
+
+      if (nav) {
+        var instances = M.Sidenav.init(nav);
+
+        console.log("dentro de binding click event");
+
+        document.querySelectorAll("li a.oneDate")
+          .forEach(f => {
+            f.addEventListener("click", onNavClick);
+          });
+
+        var allBtn = document.getElementById("allDates");
+        if (allBtn)
+          allBtn.addEventListener("click", onNavClick);
+      }
+    });
+  </script>
+</body>
+
+</html>
